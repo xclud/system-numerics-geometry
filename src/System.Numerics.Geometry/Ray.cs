@@ -150,35 +150,6 @@ namespace System.Numerics
             return result;
         }
 
-        public float? Intersects(Plane plane)
-        {
-            float? result;
-            Intersects(ref plane, out result);
-            return result;
-        }
-
-        public void Intersects(ref Plane plane, out float? result)
-        {
-            var den = Vector3.Dot(Direction, plane.Normal);
-            if (Math.Abs(den) < 0.00001f)
-            {
-                result = null;
-                return;
-            }
-
-            result = (-plane.D - Vector3.Dot(plane.Normal, Position)) / den;
-
-            if (result < 0.0f)
-            {
-                if (result < -0.00001f)
-                {
-                    result = null;
-                    return;
-                }
-
-                result = 0.0f;
-            }
-        }
 
         public void Intersects(ref BoundingSphere sphere, out float? result)
         {
@@ -214,6 +185,139 @@ namespace System.Numerics
             result = (dist < 0) ? null : distanceAlongRay - (float?)Math.Sqrt(dist);
         }
 
+
+        public float? Intersects(Plane plane)
+        {
+            float? result;
+            Intersects(ref plane, out result);
+            return result;
+        }
+
+        public void Intersects(ref Plane plane, out float? result)
+        {
+            var den = Vector3.Dot(Direction, plane.Normal);
+            if (Math.Abs(den) < 0.00001f)
+            {
+                result = null;
+                return;
+            }
+
+            result = (-plane.D - Vector3.Dot(plane.Normal, Position)) / den;
+
+            if (result < 0.0f)
+            {
+                if (result < -0.00001f)
+                {
+                    result = null;
+                    return;
+                }
+
+                result = 0.0f;
+            }
+        }
+
+
+        /// <summary>
+        /// Intersect a ray with triangle defined by vertices v0, v1, v2.
+        /// </summary>
+        /// <returns>returns true if ray hits triangle at distance less than dist, or false otherwise.</returns>
+        public float? Intersects(Vector3 v0, Vector3 v1, Vector3 v2)
+        {
+            const float EPSILON = 0.00001f;
+
+            // calculate edge vectors
+            var edge0 = v1 - v0;
+            var edge1 = v2 - v0;
+
+            // begin calculating determinant - also used to calculate U parameter
+            var pvec = Vector3.Cross(this.Direction, edge1);
+
+            // if determinant is near zero, ray lies in plane of triangle
+            var det = Vector3.Dot(edge0, pvec);
+            if (Math.Abs(det) < EPSILON)
+            {
+                return null;
+            }
+
+            float inv_det = 1.0f / det;
+
+            // calculate vector from vert0 to ray origin
+            var tvec = this.Position - v0;
+
+            // calculate U parameter, test bounds
+            float u = Vector3.Dot(tvec, pvec) * inv_det;
+            if (u < -0.01f || u > 1.01f)
+            {
+                return null;
+            }
+
+            // prepare to test V parameter
+            var qvec = Vector3.Cross(tvec, edge0);
+
+            // calculate V parameter and test bounds
+            float v = Vector3.Dot(this.Direction, qvec) * inv_det;
+            if (v < 0.0f || u + v > 1.0f)
+            {
+                return null;
+            }
+
+            // calculate distance to intersection point from ray origin
+            float d = Vector3.Dot(edge1, qvec) * inv_det;
+
+            return d;
+        }
+
+        /// <summary>
+        /// Intersect a ray with triangle defined by vertices v0, v1, v2.
+        /// </summary>
+        /// <returns>returns true if ray hits triangle at distance less than dist, or false otherwise.</returns>
+        public bool Intersects(ref Vector3 v0, ref Vector3 v1, ref Vector3 v2, out float dist)
+        {
+            const float EPSILON = 0.00001f;
+
+            dist = 0;
+
+            // calculate edge vectors
+            var edge0 = v1 - v0;
+            var edge1 = v2 - v0;
+
+            // begin calculating determinant - also used to calculate U parameter
+            var pvec = Vector3.Cross(this.Direction, edge1);
+
+            // if determinant is near zero, ray lies in plane of triangle
+            var det = Vector3.Dot(edge0, pvec);
+            if (Math.Abs(det) < EPSILON)
+            {
+                return false;
+            }
+
+            float inv_det = 1.0f / det;
+
+            // calculate vector from vert0 to ray origin
+            var tvec = this.Position - v0;
+
+            // calculate U parameter, test bounds
+            float u = Vector3.Dot(tvec, pvec) * inv_det;
+            if (u < -0.01f || u > 1.01f)
+            {
+                return false;
+            }
+
+            // prepare to test V parameter
+            var qvec = Vector3.Cross(tvec, edge0);
+
+            // calculate V parameter and test bounds
+            float v = Vector3.Dot(this.Direction, qvec) * inv_det;
+            if (v < 0.0f || u + v > 1.0f)
+            {
+                return false;
+            }
+
+            // calculate distance to intersection point from ray origin
+            dist = Vector3.Dot(edge1, qvec) * inv_det;
+
+            return true;
+        }
 
         public static bool operator !=(Ray a, Ray b)
         {
