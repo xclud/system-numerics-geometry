@@ -1,0 +1,4 @@
+*.user
+/src/.vs
+/src/System.Numerics.Geometry/obj
+/src/System.Numerics.Geometry/bin
