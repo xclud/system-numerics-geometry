@@ -319,6 +319,28 @@ namespace System.Numerics
             return true;
         }
 
+        /// <summary>
+        /// Intersects the Ray against an OrientedBoundingBox.
+        /// </summary>
+        /// <param name="obb">OrientedBoundingBox to intersect against.</param>
+        /// <returns>True if the two intersect.</returns>
+        public bool Intersects(OrientedBoundingBox obb)
+        {
+            return obb.Intersects(this);
+        }
+
+        /// <summary>
+        /// Intersects the Ray against an OrientedBoundingBox.
+        /// </summary>
+        /// <param name="obb">OrientedBoundingBox to intersect against.</param>
+        /// <param name="minDistance">Min intersect distance</param>
+        /// <param name="maxDistance">Max intersect distance</param>
+        /// <returns>True if the two intersect.</returns>
+        public bool Intersects(OrientedBoundingBox obb, out float minDistance, out float maxDistance)
+        {
+            return obb.Intersects(this, out minDistance, out maxDistance);
+        }
+
         public static bool operator !=(Ray a, Ray b)
         {
             return !a.Equals(b);
