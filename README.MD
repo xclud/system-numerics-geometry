@@ -17,8 +17,8 @@ Nuget: [https://www.nuget.org/packages/Geometry](https://www.nuget.org/packages/
 
 Install the package by either of the following commands:
 
-```Install-Package Geometry -Version 1.0.0```
+```Install-Package Geometry```
 
-```dotnet add package Geometry --version 1.0.0```
+```dotnet add package Geometry```
 
 [https://www.nuget.org/packages/Geometry](https://www.nuget.org/packages/Geometry)
