@@ -11,6 +11,7 @@
     <Version>1.0.0.1</Version>
     <PackageProjectUrl>https://github.com/xclud/system-numerics-geometry</PackageProjectUrl>
     <PackageReleaseNotes>This release brings OrientedBoundingBox as well as Ray-Triangle intersection.</PackageReleaseNotes>
+    <PackageId>Geometry</PackageId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
